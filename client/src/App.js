@@ -21,6 +21,10 @@ class App extends Component {
         this.setState({
           users: message.data
         });
+      } else if (message.event === 'scores') {
+        this.setState({
+          scores: message.data
+        });
       }
     };
 
@@ -29,6 +33,7 @@ class App extends Component {
       ],
       users: {
       },
+      scores: {},
     };
 
     this.makeMove = move => e => {
@@ -68,9 +73,10 @@ class App extends Component {
         <table>
           <thead>
             <tr className="header">
-              { Object.values(this.state.users).map(user => (
-                  <td key={user.name} className="username">
-                    {user.name}
+              { Object.keys(this.state.users).map(userId => (
+                  <td key={userId} className="username">
+                    {this.state.users[userId].name}
+                    ({this.state.scores[userId] || 0})
                   </td>
               ))}
             </tr>
