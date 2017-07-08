@@ -11,23 +11,31 @@ const scores = {};
 const history = [{}];
 
 const sock = socket(conn => {
-  users[conn.id] = {name: 'Ukjent'};
-
-  sock.broadcast('users', users);
+  let userId = conn.id;
 
   conn.on('data', data => {
     const message = JSON.parse(data);
 
     if (message.event === 'register') {
-      users[conn.id] = message.data;
-      scores[conn.id] = 0;
+      message.data.id = userId;
+      users[userId] = message.data;
+      scores[userId] = 0;
       sock.broadcast('users', users);
+      conn.send('user', message.data);
+    }
+
+    if (message.event === 'reconnect') {
+      if (users[message.data.id]) {
+        userId = message.data.id;
+        sock.broadcast('users', users);
+        conn.send('user', users[userId]);
+      }
     }
 
     if (message.event === 'move') {
       const lastRound = history[history.length - 1];
       if (lastRound[conn.id] == null) {
-        lastRound[conn.id] = message.data;
+        lastRound[userId] = message.data;
       }
       if (lastRound.length === users.length) {
         const roundResults = game.computeRoundResults(lastRound);

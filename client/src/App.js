@@ -21,6 +21,11 @@ class App extends Component {
         this.setState({
           users: message.data
         });
+      } else if (message.event === 'user') {
+        window.localStorage.setItem('userId', message.data.id);
+        this.setState({
+          name: message.data.name,
+        });
       } else if (message.event === 'scores') {
         this.setState({
           scores: message.data
@@ -35,6 +40,16 @@ class App extends Component {
       },
       scores: {},
     };
+
+    const userId = window.localStorage.getItem('userId');
+    if (userId) {
+      socket.onopen = () => {
+        socket.send(JSON.stringify({
+          event: 'reconnect',
+          data: {id: userId},
+        }));
+      }
+    }
 
     this.makeMove = move => e => {
       socket.send(JSON.stringify({
