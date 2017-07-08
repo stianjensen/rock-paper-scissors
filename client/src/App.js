@@ -95,6 +95,7 @@ class App extends Component {
               { Object.keys(this.state.users).map(userId => (
                   <td key={userId} className="username">
                     {this.state.users[userId].name}
+                    &nbsp;
                     ({this.state.scores[userId] || 0})
                   </td>
               ))}
