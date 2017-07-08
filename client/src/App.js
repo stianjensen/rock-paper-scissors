@@ -14,6 +14,7 @@ class App extends Component {
 
       if (message.event === 'round') {
         this.setState({
+          currentMove: null,
           history: this.state.history.concat(message.data)
         });
       } else if (message.event === 'users') {
@@ -80,7 +81,7 @@ class App extends Component {
           </tbody>
         </table>
         { this.state.currentMove
-          ? null
+          ? <div>Venter på resten</div>
           : <div>
               <button onClick={this.makeMove('rock')}>Rock</button>
               <button onClick={this.makeMove('paper')}>Paper</button>
