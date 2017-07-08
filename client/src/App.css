@@ -13,3 +13,32 @@
   padding: 20px;
   color: white;
 }
+
+.popover {
+  position: fixed;
+  top: 20%;
+  left: 20%;
+  right: 20%;
+  bottom: 20%;
+  z-index: 10;
+}
+.popover div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 50px;
+  background: white;
+}
+
+.popover::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import SockJS from 'sockjs-client';
 import logo from './logo.svg';
 import './App.css';
 
@@ -6,19 +7,47 @@ class App extends Component {
   constructor(props) {
     super(props);
 
+    const socket = new SockJS('http://localhost:7000/socket');
+    socket.onmessage = e => {
+      const message = JSON.parse(e.data);
+      console.log('message', message);
+
+      if (message.event === 'round') {
+        this.setState({
+          history: this.state.history.concat(message.data)
+        });
+      } else if (message.event === 'users') {
+        this.setState({
+          users: message.data
+        });
+      }
+    };
+
     this.state = {
       history: [
-        {1: 'paper', 2: 'rock'},
       ],
       users: {
-        1: {name: 'Stian'},
-        2: {name: 'Bjarne'},
-        3: {name: 'Ola'},
       },
     };
 
     this.makeMove = move => e => {
+      socket.send(JSON.stringify({
+        event: 'move',
+        data: move,
+      }));
       this.setState({currentMove: move});
+    };
+
+    this.changeName = e => {
+      this.setState({editName: e.target.value});
+    };
+
+    this.setName = () => {
+      this.setState({name: this.state.editName});
+      socket.send(JSON.stringify({
+        event: 'register',
+        data: {name: this.state.editName},
+      }));
     };
   }
 
@@ -56,6 +85,16 @@ class App extends Component {
               <button onClick={this.makeMove('rock')}>Rock</button>
               <button onClick={this.makeMove('paper')}>Paper</button>
               <button onClick={this.makeMove('scissor')}>Scissor</button>
+            </div>
+        }
+
+        { this.state.name
+          ? null
+          : <div className='popover'>
+              <div>
+                <input onChange={this.changeName} />
+                <button onClick={this.setName}>Join</button>
+              </div>
             </div>
         }
       </div>

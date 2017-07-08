@@ -11,11 +11,14 @@ const history = [{}];
 const sock = socket(conn => {
   users[conn.id] = {};
 
+  sock.broadcast('users', users);
+
   conn.on('data', data => {
     const message = JSON.parse(data);
 
     if (message.event === 'register') {
       users[conn.id] = message.data;
+      sock.broadcast('users', users);
     }
 
     if (message.event === 'move') {
