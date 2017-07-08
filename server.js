@@ -6,9 +6,9 @@ const app = express();
 app.use(express.static('client/build'));
 
 const users = {};
-const scores = {};
+let scores = {};
 
-const history = [{}];
+let history = [{}];
 
 const sock = socket(conn => {
   let userId = conn.id;
@@ -37,7 +37,7 @@ const sock = socket(conn => {
       if (lastRound[userId] == null) {
         lastRound[userId] = message.data;
       }
-      if (lastRound.length === users.length) {
+      if (Object.keys(lastRound).length === Object.keys(users).length) {
         const roundResults = game.computeRoundResults(lastRound);
         updateResults(roundResults);
         history.push({});
@@ -50,15 +50,56 @@ const sock = socket(conn => {
       delete users[message.data];
       sock.broadcast('users', users);
     }
+
+    if (message.event === 'resetGame') {
+    	resetGame();
+    	sock.broadcast('scores', scores);
+    	sock.broadcast('winner', null);
+    	sock.broadcast('history', []);
+    }
   });
 });
 
+function resetGame() {
+	scores = {};
+	history = {};
+}
+
 function updateResults(roundResults){
+	console.log(roundResults.stalemate);
+	console.log(roundResults.winners);
 	if (roundResults.stalemate) { //stalemate is a boolean that is true if no-one won the round
 		return;
 	}
-	for (cid in roundResults.winners) {
+	for (cid of roundResults.winners) {
 		scores[cid] = scores[cid] + 1;
+	}
+	potentialWinner = checkForWinner(scores);
+	if (potentialWinner) {
+		sock.broadcast('winner', users[potentialWinner].name);
+	}
+	console.log(scores);
+}
+
+function checkForWinner(scores){
+	let highest = 0;
+	let nextHighest = 0;
+	let winner = null;
+	for (cid in scores){
+		if (scores[cid] > highest) {
+			winner = cid;
+			nextHighest = highest;
+			highest = scores[cid];
+		}
+		else if (scores[cid] > nextHighest) {
+			nextHighest = scores[cid];
+		}
+	}
+	if (highest - nextHighest >= 3) {
+		return winner;
+	}
+	else {
+		return false;
 	}
 }
 

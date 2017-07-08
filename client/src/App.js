@@ -34,6 +34,10 @@ class App extends Component {
         this.setState({
           winner: message.data
         });
+      } else if (message.event === 'history') {
+        this.setState({
+          history: message.data
+        });
       }
     };
 
@@ -81,6 +85,13 @@ class App extends Component {
         data: userId,
       }));
     };
+
+    this.resetGame = () => {
+      socket.send(JSON.stringify({
+        event: 'resetGame'
+      }));
+
+    }
   }
 
   render() {
@@ -136,6 +147,7 @@ class App extends Component {
               <div>
                 <h2>Vinner</h2>
                 <h2>{this.state.winner}</h2>
+                <button onClick={this.resetGame}> Reset game </button>
               </div>
             </div>
           : null
@@ -152,6 +164,7 @@ class App extends Component {
             </div>
           ))}
         </div>
+        <button onClick={this.resetGame}> Reset game </button>
       </div>
     );
   }
