@@ -50,6 +50,13 @@ class App extends Component {
         data: {name: this.state.editName},
       }));
     };
+
+    this.deleteUser = userId => e => {
+      socket.send(JSON.stringify({
+        event: 'deleteUser',
+        data: userId,
+      }));
+    };
   }
 
   render() {
@@ -98,6 +105,18 @@ class App extends Component {
               </div>
             </div>
         }
+        <div>
+          <h2>Fjern brukere</h2>
+          { Object.keys(this.state.users).map(userId => (
+            <div key={userId}>
+              <button
+                onClick={this.deleteUser(userId)}
+                className="username">
+              Slett {this.state.users[userId].name}
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

@@ -11,7 +11,7 @@ const scores = {};
 const history = [{}];
 
 const sock = socket(conn => {
-  users[conn.id] = {};
+  users[conn.id] = {name: 'Ukjent'};
 
   sock.broadcast('users', users);
 
@@ -36,6 +36,11 @@ const sock = socket(conn => {
         sock.broadcast('round', lastRound);
         sock.broadcast('scores', scores);
       }
+    }
+
+    if (message.event === 'deleteUser') {
+      delete users[message.data];
+      sock.broadcast('users', users);
     }
   });
 });
