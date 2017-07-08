@@ -30,6 +30,10 @@ class App extends Component {
         this.setState({
           scores: message.data
         });
+      } else if (message.event === 'winner') {
+        this.setState({
+          winner: message.data
+        });
       }
     };
 
@@ -125,6 +129,15 @@ class App extends Component {
                 <button onClick={this.setName}>Join</button>
               </div>
             </div>
+        }
+        { this.state.winner
+          ? <div className='popover'>
+              <div>
+                <h2>Vinner</h2>
+                <h2>{this.state.winner}</h2>
+              </div>
+            </div>
+          : null
         }
         <div>
           <h2>Fjern brukere</h2>
