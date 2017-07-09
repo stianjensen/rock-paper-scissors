@@ -70,6 +70,10 @@ const sock = socket(conn => {
 
     if (message.event === 'deleteUser') {
       delete users[message.data];
+      const index = currentPlayers.indexOf(message.data);
+      if (index !== -1) {
+        currentPlayers.splice(index, 1);
+      }
       sock.broadcast('users', users);
     }
 

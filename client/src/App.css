@@ -2,16 +2,17 @@
   text-align: center;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
 .App-header {
   background-color: #222;
-  height: 150px;
   padding: 20px;
+  margin-bottom: 20px;
   color: white;
+}
+
+.App-header h2 {
+  margin: 0;
+  height: 60px;
+  line-height: 60px;
 }
 
 .popover {
@@ -61,4 +62,8 @@
 
 .history {
   margin: 0 auto;
+}
+
+.move img {
+  width: 40px;
 }
