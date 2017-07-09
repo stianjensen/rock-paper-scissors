@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import SockJS from 'sockjs-client';
-import logo from './logo.svg';
+import rock from './rock.svg';
+import scissors from './scissors.svg';
+import paper from './paper.svg';
 import './App.css';
 
 class App extends Component {
@@ -127,9 +129,27 @@ class App extends Component {
         { this.state.currentMove
           ? <div>Venter på resten</div>
           : <div>
-              <button onClick={this.makeMove('rock')}>Rock</button>
-              <button onClick={this.makeMove('paper')}>Paper</button>
-              <button onClick={this.makeMove('scissor')}>Scissor</button>
+              <a
+                className='move-action'
+                onClick={this.makeMove('rock')}
+                >
+                <img src={rock} />
+                Rock
+              </a>
+              <a 
+                className='move-action'
+                onClick={this.makeMove('paper')}
+                >
+                <img src={paper} />
+                Paper
+              </a>
+              <a
+                className='move-action'
+                onClick={this.makeMove('scissor')}
+                >
+                <img src={scissors} />
+                Scissor
+              </a>
             </div>
         }
 
@@ -165,6 +185,9 @@ class App extends Component {
           ))}
         </div>
         <button onClick={this.resetGame}> Reset game </button>
+        <div><small><em>
+          Icons created by Cristiano Zoucas from the Noun Project
+        </em></small></div>
       </div>
     );
   }
