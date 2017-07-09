@@ -152,7 +152,10 @@ class App extends Component {
                   { Object.keys(this.state.users).map(userId => (
                       <td
                         key={userId}
-                        className={`move ${userId === this.state.userId ? 'yourself' : ''}`}
+                        className={`move
+                                    ${userId === this.state.userId ? 'yourself' : ''}
+                                    ${round.moves[userId] === round.results.winningMove ? 'win' : ''}
+                                    `}
                         >
                         { round.moves[userId] === 'rock' ? <img src={rock} alt="Rock" /> : null }
                         { round.moves[userId] === 'paper' ? <img src={paper} alt="Paper" /> : null }
