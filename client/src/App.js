@@ -127,7 +127,7 @@ class App extends Component {
         <div className="App-header">
           <h2>Rock - paper - scissors</h2>
         </div>
-        <table>
+        <table className="history">
           <thead>
             <tr className="header">
               { Object.keys(this.state.users).map(userId => (
