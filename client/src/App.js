@@ -223,6 +223,8 @@ class App extends Component {
             </div>
           ))}
         </div>
+        <br/>
+        <br/>
         <button onClick={this.resetGame}> Reset game </button>
         <div><small><em>
           Icons created by Cristiano Zoucas from the Noun Project
