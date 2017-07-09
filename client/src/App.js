@@ -30,6 +30,7 @@ class App extends Component {
         case 'user':  {
           window.localStorage.setItem('userId', message.data.id);
           this.setState({
+            userId: message.data.id,
             name: message.data.name,
           });
           break;
@@ -126,11 +127,14 @@ class App extends Component {
         <div className="App-header">
           <h2>Rock - paper - scissors</h2>
         </div>
-        <table>
+        <table className="history">
           <thead>
             <tr className="header">
               { Object.keys(this.state.users).map(userId => (
-                  <td key={userId} className="username">
+                  <td
+                    key={userId}
+                    className={`username ${userId == this.state.userId ? 'yourself' : ''}`}
+                    >
                     {this.state.users[userId].name}
                     &nbsp;
                     ({this.state.scores[userId] || 0})
@@ -142,7 +146,10 @@ class App extends Component {
             { this.state.history.map((round, index) => (
                 <tr key={index}>
                   { Object.keys(this.state.users).map(userId => (
-                      <td key={userId} className="move">
+                      <td
+                        key={userId}
+                        className={`move ${userId == this.state.userId ? 'yourself' : ''}`}
+                        >
                         { round[userId] === 'rock' ? <img src={rock} /> : null }
                         { round[userId] === 'paper' ? <img src={paper} /> : null }
                         { round[userId] === 'scissor' ? <img src={scissors} /> : null }
