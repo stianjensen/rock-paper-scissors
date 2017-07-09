@@ -119,7 +119,9 @@ class App extends Component {
                 <tr key={index}>
                   { Object.keys(this.state.users).map(userId => (
                       <td key={userId} className="move">
-                        { round[userId] }
+                        { round[userId] === 'rock' ? <img src={rock} /> : null }
+                        { round[userId] === 'paper' ? <img src={paper} /> : null }
+                        { round[userId] === 'scissor' ? <img src={scissors} /> : null }
                       </td>
                   ))}
                 </tr>
