@@ -37,7 +37,9 @@ const sock = socket(conn => {
       if (lastRound[userId] == null) {
         lastRound[userId] = message.data;
       }
-      if (Object.keys(lastRound).length === Object.keys(users).length) {
+      const pending = findPending(lastRound, users);
+      sock.broadcast('pending', pending);
+      if (pending.length === 0) {
         const roundResults = game.computeRoundResults(lastRound);
         updateResults(roundResults);
         history.push({});
@@ -68,12 +70,7 @@ function resetGame() {
 function updateResults(roundResults){
 	console.log(roundResults.stalemate);
 	console.log(roundResults.winners);
-	if (roundResults.stalemate) { //stalemate is a boolean that is true if no-one won the round
-		return;
-	}
-	for (cid of roundResults.winners) {
-		scores[cid] = scores[cid] + 1;
-	}
+	pointsForAllWinners(roundResults) //Replace this line to change game mode
 	potentialWinner = checkForWinner(scores);
 	if (potentialWinner) {
 		sock.broadcast('winner', users[potentialWinner].name);
@@ -81,11 +78,48 @@ function updateResults(roundResults){
 	console.log(scores);
 }
 
+function pointsForAllWinners(roundResults) {
+	if (roundResults.stalemate) { //stalemate is a boolean that is true if no-one won the round
+		return;
+	}
+	for (cid of roundResults.winners) {
+		scores[cid] = scores[cid] + 1;
+	}
+}
+
+function playForSingleResult(roundResults, playToWin){
+	const stayers = game.getStayers(roundResults, playToWin);
+	const waiters = [];
+	if (stayers.length === 1){
+		scores[stayers[0]] = scores[stayers[0]] + 1;
+		currentPlayers = users;
+	} else {
+		for (const cid of users) {
+			if (!stayers.includes(cid)){
+				waiters.add(cid);
+			}
+		}
+		currentPlayers = stayers;
+	}
+	sock.targetedBroadcast(currentPlayers, 'round', null) //TODO put in right place
+	sock.targetedBroadcast(waiters, 'wait', null) //TODO
+}
+
+function findPending(round, users){
+	const pending = [];
+	for (const cid in users) {
+		if (!(cid in round)){
+			pending.push(cid);
+		}
+	}
+	return pending.map(usid => users[usid].name);
+}
+
 function checkForWinner(scores){
 	let highest = 0;
 	let nextHighest = 0;
 	let winner = null;
-	for (cid in scores){
+	for (const cid in scores){
 		if (scores[cid] > highest) {
 			winner = cid;
 			nextHighest = highest;

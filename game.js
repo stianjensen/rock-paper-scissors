@@ -61,4 +61,13 @@ function computeRoundResults(round) { //Returns the set of connections that won
 	return { stalemate, winners, losers, winningMove, losingMove };
 }
 
-module.exports = { computeRoundResults };
+function getStayers(round, playToWin){
+	roundResults = computeRoundResults(round);
+	if (playToWin) {
+		return roundResults.winners;
+	} else {
+		return roundResults.losers;
+	}
+}
+
+module.exports = { computeRoundResults, getStayers };

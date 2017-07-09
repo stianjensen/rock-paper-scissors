@@ -11,6 +11,12 @@ function socket(onConnectionCallback) {
     }
   }
 
+  function targetedBroadcast(audience, event, data) {
+    for (const id in audience) {
+      connections[id].send(event, data);
+    }
+  }
+
   server.on('connection', conn => {
     connections[conn.id] = conn;
     console.log('A client has connected');
