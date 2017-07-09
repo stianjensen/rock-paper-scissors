@@ -146,7 +146,7 @@ class App extends Component {
           </tbody>
         </table>
         { this.state.currentMove
-          ? <div>Venter på resten</div>
+          ? <div>Venter på { this.state.pending ? this.state.pending.join(', ') : 'neste runde' }</div>
           : <div>
               <a
                 className='move-action'
