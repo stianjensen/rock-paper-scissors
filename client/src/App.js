@@ -215,10 +215,8 @@ class App extends Component {
           <h2>Fjern brukere</h2>
           { Object.keys(this.state.users).map(userId => (
             <div key={userId}>
-              <button
-                onClick={this.deleteUser(userId)}
-                className="username">
-              Slett {this.state.users[userId].name}
+              <button onClick={this.deleteUser(userId)}>
+                Slett {this.state.users[userId].name}
               </button>
             </div>
           ))}
