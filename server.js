@@ -57,19 +57,21 @@ const sock = socket(conn => {
     	resetGame();
     	sock.broadcast('scores', scores);
     	sock.broadcast('winner', null);
-    	sock.broadcast('history', []);
+    	sock.broadcast('history', history);
     }
   });
 });
 
 function resetGame() {
-	scores = {};
-	history = {};
+	for (const cid in users) {
+		scores[cid] = 0;
+	}
+	history = [{}];
 }
 
 function updateResults(roundResults){
-	console.log(roundResults.stalemate);
-	console.log(roundResults.winners);
+	console.log("stalemate: " + roundResults.stalemate);
+	console.log("winner: " + roundResults.winners);
 	pointsForAllWinners(roundResults) //Replace this line to change game mode
 	potentialWinner = checkForWinner(scores);
 	if (potentialWinner) {

@@ -12,33 +12,46 @@ class App extends Component {
       const message = JSON.parse(e.data);
       console.log('message', message);
 
-      if (message.event === 'round') {
-        this.setState({
-          currentMove: null,
-          history: this.state.history.concat(message.data)
-        });
-      } else if (message.event === 'users') {
-        this.setState({
-          users: message.data
-        });
-      } else if (message.event === 'user') {
-        window.localStorage.setItem('userId', message.data.id);
-        this.setState({
-          name: message.data.name,
-        });
-      } else if (message.event === 'scores') {
-        this.setState({
-          scores: message.data
-        });
-      } else if (message.event === 'winner') {
-        this.setState({
-          winner: message.data
-        });
-      } else if (message.event === 'history') {
-        this.setState({
-          history: message.data
-        });
-      }
+      switch (message.event) {
+        case 'startNewRound': {
+          this.setState({
+            currentMove: null,
+            history: this.state.history.concat(message.data)
+          });
+          break;
+        }
+        case 'users': {
+          this.setState({
+            users: message.data
+          });
+          break;
+        }
+        case 'user':  {
+          window.localStorage.setItem('userId', message.data.id);
+          this.setState({
+            name: message.data.name,
+          });
+          break;
+        }
+        case 'scores':  {
+          this.setState({
+            scores: message.data
+          });
+          break;
+        }
+        case 'winner':  {
+          this.setState({
+            winner: message.data
+          });
+          break;
+        }
+        case 'history': {
+          this.setState({
+            history: message.data
+          });
+          break;
+        }
+      };
     };
 
     this.state = {
