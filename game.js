@@ -8,6 +8,7 @@ function computeRoundResults(round) { //Returns the set of connections that won
 	let playedMoves = {'rock' : 0, 'paper' : 0, 'scissor' : 0}; //will keep track of whether each move has been played in the round
 	let winners = [];
 	let losers = [];
+	let players = [];
 	let firstMovers = []; //We don't know where to place the first mover until someone plays a different move from them
 	let firstMove = null;
 	let winningMove = null;
@@ -17,6 +18,7 @@ function computeRoundResults(round) { //Returns the set of connections that won
 	console.log(round);
 	for (const connid in round) {
 		console.log("entering " + connid);
+		players.push(connid);
 		const move = round[connid];
 		console.log(move);
 		const isBeaten = (playedMoves[beatRules[move]] > 0) //Look up the move that beats the current move and check that if it has been played
@@ -58,11 +60,13 @@ function computeRoundResults(round) { //Returns the set of connections that won
 		}
 		console.log("stalemate: " + stalemate);
 	}
-	return { stalemate, winners, losers, winningMove, losingMove };
+	return { stalemate, winners, losers, winningMove, losingMove, players };
 }
 
-function getStayers(round, playToWin){
-	roundResults = computeRoundResults(round);
+function getStayers(roundResults, playToWin){
+	if (roundResults.stalemate) {
+		return roundResults.players;
+	}
 	if (playToWin) {
 		return roundResults.winners;
 	} else {

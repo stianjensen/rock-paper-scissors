@@ -48,14 +48,22 @@ const sock = socket(conn => {
       if (lastRound[userId] == null) {
         lastRound[userId] = message.data;
       }
-      const pending = findPending(lastRound, users);
+      const pending = findPending(lastRound, currentPlayers);
       sock.broadcast('pending', pending);
       if (pending.length === 0) {
         const roundResults = game.computeRoundResults(lastRound);
+        history.push({}); //The round is over, so we initiate a new empty round
+        switch (gameMode){
+            case 'pointsForAllWinners': {	//This mode gives a point to everyone who played a winning move and lets everyone play again
+                pointsForAllWinners(roundResults); //This method gives out the points and starts a new round for everyone
+                break;
+            }
+            case 'playForSingleResult' : { //This mode continues until there is a single winner (or loser)
+                playForSingleResult(roundResults, playToWin) //This method only gives out points if there is a single winner, otherwise starts a new round for the ones who are still in play
+                break;
+            }
+        }
         updateResults(roundResults);
-        history.push({});
-        sock.broadcast('startNewRound', history);
-        sock.broadcast('scores', scores);
       }
     }
 
@@ -99,6 +107,7 @@ function pointsForAllWinners(roundResults) {
 	for (cid of roundResults.winners) {
 		scores[cid] = scores[cid] + 1;
 	}
+	sock.broadcast('startNewRound');
 }
 
 function playForSingleResult(roundResults, playToWin){
@@ -114,8 +123,9 @@ function playForSingleResult(roundResults, playToWin){
 	} else {
 		currentPlayers = stayers;
 	}
-	sock.targetedBroadcast(currentPlayers, 'startNewRound')
-	sock.broadcast('history', history)
+	sock.targetedBroadcast(currentPlayers, 'startNewRound');
+	sock.broadcast('history', history);
+	sock.broadcast('pending', stayers.map(usid=>users[usid].name));
 }
 
 function findPending(round, currentPlayers){
