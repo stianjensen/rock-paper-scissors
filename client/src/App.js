@@ -158,10 +158,10 @@ class App extends Component {
         { this.state.name
           ? null
           : <div className='popover'>
-              <div>
+              <form onSubmit={this.setName}>
                 <input onChange={this.changeName} />
-                <button onClick={this.setName}>Join</button>
-              </div>
+                <input type='submit' value='Join' />
+              </form>
             </div>
         }
         { this.state.winner

@@ -22,7 +22,7 @@
   bottom: 20%;
   z-index: 10;
 }
-.popover div {
+.popover form {
   position: absolute;
   top: 0;
   left: 0;
