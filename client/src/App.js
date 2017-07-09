@@ -65,6 +65,10 @@ class App extends Component {
           })
           break;
         }
+        default: {
+          console.log('Unrecognized event received: ' + message.event);
+          break;
+        }
       };
     };
 
@@ -133,7 +137,7 @@ class App extends Component {
               { Object.keys(this.state.users).map(userId => (
                   <td
                     key={userId}
-                    className={`username ${userId == this.state.userId ? 'yourself' : ''}`}
+                    className={`username ${userId === this.state.userId ? 'yourself' : ''}`}
                     >
                     {this.state.users[userId].name}
                     &nbsp;
@@ -148,11 +152,11 @@ class App extends Component {
                   { Object.keys(this.state.users).map(userId => (
                       <td
                         key={userId}
-                        className={`move ${userId == this.state.userId ? 'yourself' : ''}`}
+                        className={`move ${userId === this.state.userId ? 'yourself' : ''}`}
                         >
-                        { round[userId] === 'rock' ? <img src={rock} /> : null }
-                        { round[userId] === 'paper' ? <img src={paper} /> : null }
-                        { round[userId] === 'scissor' ? <img src={scissors} /> : null }
+                        { round.moves[userId] === 'rock' ? <img src={rock} alt="Rock" /> : null }
+                        { round.moves[userId] === 'paper' ? <img src={paper} alt="Paper" /> : null }
+                        { round.moves[userId] === 'scissor' ? <img src={scissors} alt="Scissors" /> : null }
                       </td>
                   ))}
                 </tr>
@@ -166,21 +170,21 @@ class App extends Component {
                 className='move-action'
                 onClick={this.makeMove('rock')}
                 >
-                <img src={rock} />
+                <img src={rock} alt="Rock" />
                 Rock
               </a>
               <a 
                 className='move-action'
                 onClick={this.makeMove('paper')}
                 >
-                <img src={paper} />
+                <img src={paper} alt="Paper" />
                 Paper
               </a>
               <a
                 className='move-action'
                 onClick={this.makeMove('scissor')}
                 >
-                <img src={scissors} />
+                <img src={scissors} alt="Scissors" />
                 Scissor
               </a>
             </div>
