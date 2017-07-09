@@ -34,7 +34,7 @@ const sock = socket(conn => {
 
     if (message.event === 'move') {
       const lastRound = history[history.length - 1];
-      if (lastRound[conn.id] == null) {
+      if (lastRound[userId] == null) {
         lastRound[userId] = message.data;
       }
       if (lastRound.length === users.length) {
