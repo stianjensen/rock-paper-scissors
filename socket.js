@@ -9,13 +9,16 @@ function socket(onConnectionCallback) {
     for (const id in connections) {
       connections[id].send(event, data);
     }
-  }
+  };
 
   function targetedBroadcast(audience, event, data) {
-    for (const id in audience) {
+    console.log("audience: " + audience);
+    for (const id of audience) {
+      console.log("sending to: " + id);
+      console.log("from list: " + connections);
       connections[id].send(event, data);
     }
-  }
+  };
 
   server.on('connection', conn => {
     connections[conn.id] = conn;
@@ -39,7 +42,7 @@ function socket(onConnectionCallback) {
 
   });
 
-  return {server, broadcast};
+  return {server, broadcast, targetedBroadcast};
 }
 
 module.exports = socket;

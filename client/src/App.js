@@ -56,6 +56,13 @@ class App extends Component {
           this.setState({
             pending: message.data
           })
+          break;
+        }
+        case 'roundResults': {
+          this.setState({
+            roundResults: message.data
+          })
+          break;
         }
       };
     };

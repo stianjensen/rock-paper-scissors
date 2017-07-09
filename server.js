@@ -5,8 +5,16 @@ const game = require('./game');
 const app = express();
 app.use(express.static('client/build'));
 
+//config
+
+const gameMode = 'playForSingleResult';
+const playToWin = true;
+
+//end config
+
 const users = {};
 let scores = {};
+let currentPlayers = [];
 
 let history = [{}];
 
@@ -22,6 +30,7 @@ const sock = socket(conn => {
       scores[userId] = 0;
       sock.broadcast('users', users);
       conn.send('user', message.data);
+      currentPlayers.push(userId);
     }
 
     if (message.event === 'reconnect') {
@@ -74,12 +83,13 @@ function resetGame() {
 function updateResults(roundResults){
 	console.log("stalemate: " + roundResults.stalemate);
 	console.log("winner: " + roundResults.winners);
-	pointsForAllWinners(roundResults) //Replace this line to change game mode
+	console.log("scores: " + scores);
+    sock.broadcast('scores', scores);
+    sock.broadcast('roundResults', roundResults);
 	potentialWinner = checkForWinner(scores);
 	if (potentialWinner) {
 		sock.broadcast('winner', users[potentialWinner].name);
 	}
-	console.log(scores);
 }
 
 function pointsForAllWinners(roundResults) {
@@ -93,25 +103,24 @@ function pointsForAllWinners(roundResults) {
 
 function playForSingleResult(roundResults, playToWin){
 	const stayers = game.getStayers(roundResults, playToWin);
+	console.log("stayers: " + stayers);
 	const waiters = [];
 	if (stayers.length === 1){
 		scores[stayers[0]] = scores[stayers[0]] + 1;
-		currentPlayers = users;
-	} else {
-		for (const cid of users) {
-			if (!stayers.includes(cid)){
-				waiters.add(cid);
-			}
+		currentPlayers = [];
+		for (const usid in users){
+			currentPlayers.push(usid);
 		}
+	} else {
 		currentPlayers = stayers;
 	}
 	sock.targetedBroadcast(currentPlayers, 'startNewRound')
 	sock.broadcast('history', history)
 }
 
-function findPending(round, users){
+function findPending(round, currentPlayers){
 	const pending = [];
-	for (const cid in users) {
+	for (const cid of currentPlayers) {
 		if (!(cid in round)){
 			pending.push(cid);
 		}
