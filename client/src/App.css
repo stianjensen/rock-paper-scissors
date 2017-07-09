@@ -61,3 +61,7 @@
 .history {
   margin: 0 auto;
 }
+
+.move img {
+  width: 40px;
+}
