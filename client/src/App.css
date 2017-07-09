@@ -1,9 +1,15 @@
+body {
+  background: #EFECCA;
+  color: #002F2F;
+  font-family: BlinkMacSystemFont, -apple-system, sans-serif;
+}
+
 .App {
   text-align: center;
 }
 
 .App-header {
-  background-color: #222;
+  background-color: #046380;
   padding: 20px;
   margin-bottom: 20px;
   color: white;
@@ -55,9 +61,16 @@
   background: rgba(0, 0, 0, 0.1);
 }
 
-.yourself {
-  background: rgba(170, 200, 255, 0.4);
+.username {
   font-weight: bold;
+}
+
+.move, .username {
+  padding: 5px;
+  background: #E6E2AF;
+}
+.yourself {
+  background: rgba(4, 99, 128, 0.5);
 }
 
 .history {
