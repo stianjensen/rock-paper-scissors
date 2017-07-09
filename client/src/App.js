@@ -17,8 +17,7 @@ class App extends Component {
       switch (message.event) {
         case 'startNewRound': {
           this.setState({
-            currentMove: null,
-            history: this.state.history.concat(message.data)
+            currentMove: null
           });
           break;
         }
@@ -52,6 +51,11 @@ class App extends Component {
             history: message.data
           });
           break;
+        }
+        case 'pending': {
+          this.setState({
+            pending: message.data
+          })
         }
       };
     };

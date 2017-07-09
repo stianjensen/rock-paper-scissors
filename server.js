@@ -29,6 +29,8 @@ const sock = socket(conn => {
         userId = message.data.id;
         sock.broadcast('users', users);
         conn.send('user', users[userId]);
+        conn.send('scores' ,scores);
+        conn.send('history', history);
       }
     }
 
@@ -43,7 +45,7 @@ const sock = socket(conn => {
         const roundResults = game.computeRoundResults(lastRound);
         updateResults(roundResults);
         history.push({});
-        sock.broadcast('startNewRound', lastRound);
+        sock.broadcast('startNewRound', history);
         sock.broadcast('scores', scores);
       }
     }
@@ -103,8 +105,8 @@ function playForSingleResult(roundResults, playToWin){
 		}
 		currentPlayers = stayers;
 	}
-	sock.targetedBroadcast(currentPlayers, 'tieBreakRound', null) //TODO put in right place
-	sock.targetedBroadcast(waiters, 'waitRound', null) //TODO
+	sock.targetedBroadcast(currentPlayers, 'startNewRound')
+	sock.broadcast('history', history)
 }
 
 function findPending(round, users){
