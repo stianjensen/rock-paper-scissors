@@ -9,7 +9,11 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    const socket = new SockJS('http://localhost:7000/socket');
+    let socketURL = `http://${window.location.hostname}:7000/socket`;
+    if (process.env.NODE_ENV === 'production') {
+      socketURL = '/socket';
+    }
+    const socket = new SockJS(socketURL);
     socket.onmessage = e => {
       const message = JSON.parse(e.data);
       console.log('message', message);
