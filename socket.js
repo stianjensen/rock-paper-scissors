@@ -14,6 +14,9 @@ function socket(onConnectionCallback) {
   function targetedBroadcast(audience, event, data) {
     console.log("audience: " + audience);
     for (const id of audience) {
+      if (!(id in connections)) {
+        continue;
+      }
       console.log("sending to: " + id);
       console.log("from list: " + JSON.stringify(audience));
       connections[id].send(event, data);
