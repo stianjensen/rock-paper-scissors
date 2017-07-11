@@ -22,7 +22,7 @@ function socket(onConnectionCallback) {
 
   server.on('connection', conn => {
     connections[conn.id] = conn;
-    console.log('A client has connected');
+    console.log('A client has connected: ');
 
     conn.send = function(event, data) {
       conn.write(JSON.stringify({
