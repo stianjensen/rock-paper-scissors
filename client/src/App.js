@@ -103,6 +103,7 @@ class App extends Component {
       users: {
       },
       scores: {},
+      spectators: {},
     };
 
     const userId = window.localStorage.getItem('userId');
@@ -162,7 +163,8 @@ class App extends Component {
     return (
       <div className="App">
         <div className="App-header">
-          <h2>Rock - paper - scissors</h2>
+          <h2>Rock - Paper - Scissors</h2>
+          <p><em>Which one is it? It's your decision</em></p>
         </div>
         <table className="history">
           <thead>
@@ -261,6 +263,17 @@ class App extends Component {
           ))}
         </div>
         <br/>
+        { Object.keys(this.state.spectators).length > 0
+          ? (<div id="spectator_list">
+          <p> <strong> Tilskuere </strong></p>
+            { Object.keys(this.state.spectators).map(userId => (
+              <div key={userId} className="spectator_div">
+                {this.state.spectators[userId].name}
+              </div>
+            )) }
+            </div>)
+          : null
+        }
         <br/>
         { this.state.interaction === 'player'
           ? <button onClick={this.resetGame}> Reset game </button>
