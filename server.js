@@ -70,6 +70,12 @@ const sock = socket(conn => {
         }
         conn.send('scores', scores);
         conn.send('history', history.slice(0,-1));
+        const lastRound = history[history.length - 1];
+        if (lastRound.moves[userId]) {
+          conn.send('currentMove', lastRound.moves[userId]);
+        }
+        const pending = findPending(lastRound.moves, currentPlayers);
+        sock.broadcast('pending', pending);
       }
     }
 
