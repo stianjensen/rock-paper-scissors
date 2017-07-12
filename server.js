@@ -13,6 +13,7 @@ const playToWin = true;
 //end config
 
 const users = {};
+const spectators = {};
 let scores = {};
 let currentPlayers = [];
 
@@ -33,11 +34,28 @@ const sock = socket(conn => {
       currentPlayers.push(userId);
     }
 
+    if (message.event === 'spectator') {
+        message.data.id = userId;
+        if (message.data){
+            spectators[userId] = message.data;
+        } else {
+            spectators[userId] = 'Anonymous spectator';
+        }
+        sock.broadcast('spectators', spectators);
+        conn.send('spectator', spectators[userId]);
+        console.log('registered spectator: ' + spectators[userId]);
+    }
+
     if (message.event === 'reconnect') {
-      if (users[message.data.id]) {
+      if (users[message.data.id] || spectators[message.data.id]) {
         userId = message.data.id;
         sock.broadcast('users', users);
-        conn.send('user', users[userId]);
+        sock.broadcast('spectators', spectators);
+        if (users[message.data.id]) {
+            conn.send('user', users[userId]);
+        } else {
+            conn.send('spectator', spectators[userId]);
+        }
         conn.send('scores' ,scores);
         conn.send('history', history.slice(0,-1));
       }
@@ -50,6 +68,7 @@ const sock = socket(conn => {
       }
       const pending = findPending(lastRound.moves, currentPlayers);
       sock.broadcast('pending', pending);
+      console.log('pending: ' + pending);
       if (pending.length === 0) {
         const roundResults = game.computeRoundResults(lastRound.moves);
         lastRound.results = roundResults;
@@ -130,6 +149,7 @@ function playForSingleResult(roundResults, playToWin){
 	}
 	sock.targetedBroadcast(currentPlayers, 'startNewRound');
 	sock.broadcast('pending', stayers.map(usid=>users[usid].name));
+	sock.broadcast('newRoundStarted');
 }
 
 function findPending(moves, currentPlayers){

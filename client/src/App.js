@@ -19,6 +19,13 @@ class App extends Component {
           this.setState({
             currentMove: null
           });
+          console.log('interaction: ' + this.state.interaction);
+          break;
+        }
+        case 'newRoundStarted': {
+          this.setState({
+            pending: null
+          });
           break;
         }
         case 'users': {
@@ -32,6 +39,7 @@ class App extends Component {
           this.setState({
             userId: message.data.id,
             name: message.data.name,
+            interaction: 'player'
           });
           break;
         }
@@ -61,7 +69,24 @@ class App extends Component {
         }
         case 'roundResults': {
           this.setState({
-            roundResults: message.data
+            roundResults: message.data,
+            pending: null
+          })
+          console.log('THE ROUNDRESULTS CASE IS ACTUALLY BEING USED!');
+          break;
+        }
+        case 'spectator': {
+          window.localStorage.setItem('userId', message.data.id);
+          this.setState({
+            userId: message.data.id,
+            name: message.data.name,
+            interaction: 'spectator'
+          });
+          break;
+        }
+        case 'spectators': {
+          this.setState({
+            spectators: message.data
           })
           break;
         }
@@ -102,10 +127,18 @@ class App extends Component {
       this.setState({editName: e.target.value});
     };
 
-    this.setName = () => {
+    this.joinAsSpectator = () => {
+      this.setName('spectator');
+    };
+
+    this.joinAsPlayer = () => {
+      this.setName('register');
+    }
+
+    this.setName = (interactionType) => {
       this.setState({name: this.state.editName});
       socket.send(JSON.stringify({
-        event: 'register',
+        event: interactionType,
         data: {name: this.state.editName},
       }));
     };
@@ -163,7 +196,7 @@ class App extends Component {
             ))}
           </tbody>
         </table>
-        { this.state.currentMove
+        { this.state.currentMove || this.state.interaction === 'spectator'
           ? <div>Venter på { this.state.pending ? this.state.pending.join(', ') : 'neste runde' }</div>
           : <div>
               <a
@@ -194,9 +227,15 @@ class App extends Component {
           ? null
           : <div className='popover'>
               <div>
-                <form onSubmit={this.setName}>
-                  <input onChange={this.changeName} />
-                  <input type='submit' value='Join' />
+                <form onSubmit={this.joinAsPlayer}>
+                  <p>
+                    <strong>Type your name: </strong>
+                    <input onChange={this.changeName} />
+                  </p>
+                  <p>
+                    <input type='submit' value='Join the game' name='join_button' />
+                    <input type='button' onClick={this.joinAsSpectator} value='Just watch' name='watch_button' />
+                  </p>
                 </form>
               </div>
             </div>
@@ -223,7 +262,10 @@ class App extends Component {
         </div>
         <br/>
         <br/>
-        <button onClick={this.resetGame}> Reset game </button>
+        { this.state.interaction === 'player'
+          ? <button onClick={this.resetGame}> Reset game </button>
+          : null
+        }
         <div><small><em>
           Icons created by Cristiano Zoucas from the Noun Project
         </em></small></div>
