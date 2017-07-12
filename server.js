@@ -1,4 +1,5 @@
 const express = require('express');
+const uuidv4 = require('uuid/v4');
 const socket = require('./socket');
 const game = require('./game');
 
@@ -20,26 +21,36 @@ let currentPlayers = [];
 let history = [{moves: {}}];
 
 const sock = socket(conn => {
-  let userId = conn.id;
+  let userId = uuidv4();
 
   conn.on('data', data => {
     const message = JSON.parse(data);
 
     if (message.event === 'register') {
-      message.data.id = userId;
-      users[userId] = message.data;
+      users[userId] = {
+        id: userId,
+        name: message.data.name,
+        connId: conn.id,
+      };
       scores[userId] = 0;
       sock.broadcast('users', users);
-      conn.send('user', message.data);
+      conn.send('user', users[userId]);
       currentPlayers.push(userId);
     }
 
     if (message.event === 'spectator') {
-        message.data.id = userId;
-        if (message.data){
-            spectators[userId] = message.data;
+        if (message.data) {
+            spectators[userId] = {
+              id: userId,
+              name: message.data.name,
+              connId: conn.id,
+            };
         } else {
-            spectators[userId] = 'Anonymous spectator';
+            spectators[userId] = {
+              id: userId,
+              name: 'Anonymous spectator',
+              connId: conn.id,
+            };
         }
         sock.broadcast('spectators', spectators);
         conn.send('spectator', spectators[userId]);
@@ -51,12 +62,14 @@ const sock = socket(conn => {
         userId = message.data.id;
         sock.broadcast('users', users);
         sock.broadcast('spectators', spectators);
-        if (users[message.data.id]) {
-            conn.send('user', users[userId]);
+        if (users[userId]) {
+          users[userId].connId = conn.id;
+          conn.send('user', users[userId]);
         } else {
-            conn.send('spectator', spectators[userId]);
+          spectators[userId].connId = conn.id;
+          conn.send('spectator', spectators[userId]);
         }
-        conn.send('scores' ,scores);
+        conn.send('scores', scores);
         conn.send('history', history.slice(0,-1));
       }
     }
@@ -107,10 +120,10 @@ const sock = socket(conn => {
 });
 
 function resetGame() {
-	for (const cid in users) {
-		scores[cid] = 0;
-	}
-	history = [{moves: {}}];
+  for (const userId in scores) {
+    scores[userId] = 0;
+  }
+  history = [{moves: {}}];
 }
 
 function updateResults(roundResults){
@@ -148,7 +161,7 @@ function playForSingleResult(roundResults, playToWin){
 	} else {
 		currentPlayers = stayers;
 	}
-	sock.targetedBroadcast(currentPlayers, 'startNewRound');
+	sock.targetedBroadcast(currentPlayers.map(userId => users[userId].connId), 'startNewRound');
 	sock.broadcast('pending', stayers.map(usid=>users[usid].name));
 	sock.broadcast('newRoundStarted');
 }
