@@ -39,7 +39,7 @@ const sock = socket(conn => {
     }
 
     if (message.event === 'spectator') {
-        if (message.data) {
+        if (message.data.name) {
             spectators[userId] = {
               id: userId,
               name: message.data.name,
@@ -54,7 +54,7 @@ const sock = socket(conn => {
         }
         sock.broadcast('spectators', spectators);
         conn.send('spectator', spectators[userId]);
-        console.log('registered spectator: ' + spectators[userId]);
+        console.log('registered spectator: ' + spectators[userId].name);
     }
 
     if (message.event === 'reconnect') {
