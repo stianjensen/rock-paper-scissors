@@ -11,14 +11,14 @@ function socket(onConnectionCallback) {
     }
   };
 
-  function targetedBroadcast(audience, event, data) {
-    console.log("audience: " + audience);
-    for (const id of audience) {
+  function targetedBroadcast(connIds, event, data) {
+    console.log("send to connections: " + connIds);
+    for (const id of connIds) {
       if (!(id in connections)) {
         continue;
       }
       console.log("sending to: " + id);
-      console.log("from list: " + JSON.stringify(audience));
+      console.log("from list: " + JSON.stringify(connIds));
       connections[id].send(event, data);
     }
   };
