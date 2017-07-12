@@ -110,11 +110,12 @@ const sock = socket(conn => {
     }
 
     if (message.event === 'resetGame') {
-    	resetGame();
-    	sock.broadcast('scores', scores);
-    	sock.broadcast('winner', null);
-        sock.broadcast('history', history.slice(0,-1));
-        sock.broadcast('startNewRound');
+      resetGame();
+      sock.broadcast('scores', scores);
+      sock.broadcast('winner', null);
+      sock.broadcast('history', history.slice(0,-1));
+      sock.broadcast('startNewRound');
+      sock.broadcast('newRoundStarted');
     }
   });
 });
