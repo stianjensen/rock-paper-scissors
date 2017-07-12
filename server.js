@@ -8,7 +8,6 @@ app.use(express.static('client/build'));
 
 //config
 
-const gameMode = 'playForSingleResult';
 const playToWin = true;
 
 //end config
