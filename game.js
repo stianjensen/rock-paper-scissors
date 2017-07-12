@@ -33,21 +33,25 @@ function computeRoundResults(round) { //Returns the set of connections that won
 		}
 		if (!isBeaten && beatsSomeone) { //You are a winner if you beat someone without being beaten
 			winners.push(connid);
-			for (const cid of firstMovers) { //since we beat someone without losing, the n first players must have lost to us - we push them to losers
-				losers.push(cid);
+			if (firstMovers.length > 0) { //Check if there are any first movers with unresolved results
+				for (const cid of firstMovers) { //since we beat someone without losing, the n first players must have lost to us - we push them to losers
+					losers.push(cid);
+				}
+				losingMove = firstMove;
+				firstMovers = []; //Since the first movers are now beaten, we move them and empty the list
 			}
-			losingMove = firstMove;
-			firstMovers = []; //Since the first movers are now beaten, we move them and empty the list
 			stalemate = false;
 			winningMove = move;
 		}
 		if (isBeaten && !beatsSomeone) { //You are a loser if you lose to someone without beating anyone else
 			losers.push(connid);
-			for (const cid of firstMovers){ //Since we lost to someone without winning, the first n players must have beat us - we push them to winners
-				winners.push(cid);
+			if (firstMovers.length > 0) { //Check if there are any first movers with unresolved results
+				for (const cid of firstMovers){ //Since we lost to someone without winning, the first n players must have beat us - we push them to winners
+					winners.push(cid);
+				}
+				firstMovers = []; // since the first movers are now allocated as winners, we empty the list
+				winningMove = firstMove;
 			}
-			firstMovers = []; // since the first movers are now allocated as winners, we empty the list
-			winningMove = firstMove;
 			stalemate = false;
 			losingMove = move;
 		}
