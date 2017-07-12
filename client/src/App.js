@@ -9,7 +9,11 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    const socket = new SockJS('http://localhost:7000/socket');
+    let socketURL = `http://${window.location.hostname}:7000/socket`;
+    if (process.env.NODE_ENV === 'production') {
+      socketURL = '/socket';
+    }
+    const socket = new SockJS(socketURL);
     socket.onmessage = e => {
       const message = JSON.parse(e.data);
       console.log('message', message);
@@ -152,7 +156,10 @@ class App extends Component {
                   { Object.keys(this.state.users).map(userId => (
                       <td
                         key={userId}
-                        className={`move ${userId === this.state.userId ? 'yourself' : ''}`}
+                        className={`move
+                                    ${userId === this.state.userId ? 'yourself' : ''}
+                                    ${round.moves[userId] === round.results.winningMove ? 'win' : ''}
+                                    `}
                         >
                         { round.moves[userId] === 'rock' ? <img src={rock} alt="Rock" /> : null }
                         { round.moves[userId] === 'paper' ? <img src={paper} alt="Paper" /> : null }
