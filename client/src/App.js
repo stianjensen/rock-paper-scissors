@@ -252,7 +252,7 @@ class App extends Component {
               <div>
                 <h2>Vinner</h2>
                 <h2>{this.state.winner}</h2>
-                <button onClick={this.resetGame}> Reset game </button>
+                <button onClick={this.resetGame}>Start a new game</button>
               </div>
             </div>
           : null
@@ -281,7 +281,7 @@ class App extends Component {
         }
         <br/>
         { this.state.interaction === 'player'
-          ? <button onClick={this.resetGame}> Reset game </button>
+          ? <button onClick={this.resetGame}>Restart the whole game</button>
           : null
         }
         <div><small><em>
