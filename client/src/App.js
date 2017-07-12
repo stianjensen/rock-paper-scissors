@@ -66,8 +66,12 @@ class App extends Component {
           break;
         }
         case 'pending': {
+          const waiting = Object.values(this.state.users)
+            .map(user => user.name)
+            .filter(userName => !message.data.includes(userName));
           this.setState({
-            pending: message.data
+            waiting,
+            pending: message.data,
           })
           break;
         }
@@ -200,6 +204,7 @@ class App extends Component {
         { this.state.currentMove || this.state.interaction === 'spectator'
           ? <div>Venter på { this.state.pending ? this.state.pending.join(', ') : 'neste runde' }</div>
           : <div>
+              <p>{ this.state.waiting ? `${this.state.waiting.join(', ')} har spilt` : null }</p>
               <a
                 className='move-action'
                 onClick={this.makeMove('rock')}
