@@ -73,16 +73,7 @@ const sock = socket(conn => {
         const roundResults = game.computeRoundResults(lastRound.moves);
         lastRound.results = roundResults;
         history.push({moves: {}}); //The round is over, so we initiate a new empty round
-        switch (gameMode){
-            case 'pointsForAllWinners': {	//This mode gives a point to everyone who played a winning move and lets everyone play again
-                pointsForAllWinners(roundResults); //This method gives out the points and starts a new round for everyone
-                break;
-            }
-            case 'playForSingleResult' : { //This mode continues until there is a single winner (or loser)
-                playForSingleResult(roundResults, playToWin) //This method only gives out points if there is a single winner, otherwise starts a new round for the ones who are still in play
-                break;
-            }
-        }
+        playForSingleResult(roundResults, playToWin);
         updateResults(roundResults);
       }
     }
@@ -123,16 +114,6 @@ function updateResults(roundResults){
 		sock.broadcast('winner', users[potentialWinner].name);
 	}
 	sock.broadcast('history', history.slice(0,-1));
-}
-
-function pointsForAllWinners(roundResults) {
-	if (roundResults.stalemate) { //stalemate is a boolean that is true if no-one won the round
-		return;
-	}
-	for (cid of roundResults.winners) {
-		scores[cid] = scores[cid] + 1;
-	}
-	sock.broadcast('startNewRound');
 }
 
 function playForSingleResult(roundResults, playToWin){
