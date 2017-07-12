@@ -28,7 +28,8 @@ class App extends Component {
         }
         case 'newRoundStarted': {
           this.setState({
-            pending: null
+            waiting: null,
+            pending: null,
           });
           break;
         }
@@ -204,7 +205,7 @@ class App extends Component {
         { this.state.currentMove || this.state.interaction === 'spectator'
           ? <div>Venter på { this.state.pending ? this.state.pending.join(', ') : 'neste runde' }</div>
           : <div>
-              <p>{ this.state.waiting ? `${this.state.waiting.join(', ')} har spilt` : null }</p>
+              <p>{ this.state.waiting && this.state.waiting.length ? `${this.state.waiting.join(', ')} har spilt` : null }</p>
               <a
                 className='move-action'
                 onClick={this.makeMove('rock')}
