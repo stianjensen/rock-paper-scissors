@@ -101,6 +101,7 @@ const sock = socket(conn => {
     	sock.broadcast('scores', scores);
     	sock.broadcast('winner', null);
         sock.broadcast('history', history.slice(0,-1));
+        sock.broadcast('startNewRound');
     }
   });
 });

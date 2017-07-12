@@ -71,14 +71,6 @@ class App extends Component {
           })
           break;
         }
-        case 'roundResults': {
-          this.setState({
-            roundResults: message.data,
-            pending: null
-          })
-          console.log('THE ROUNDRESULTS CASE IS ACTUALLY BEING USED!');
-          break;
-        }
         case 'spectator': {
           window.localStorage.setItem('userId', message.data.id);
           this.setState({
