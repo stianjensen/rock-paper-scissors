@@ -5,6 +5,57 @@ import scissors from './scissors.svg';
 import paper from './paper.svg';
 import './App.css';
 
+function SummaryRow(props) {
+  return (<tr className="header">
+          <td className="move rowNumber"> # </td>
+              { Object.keys(props.userList).map(userId => (
+                  <td
+                    key={userId}
+                    className={`username ${userId === props.user ? 'yourself' : ''}`}
+                    >
+                    {props.userList[userId].name}
+                    &nbsp;
+                    ({props.scores[userId] || 0})
+                  </td>
+              ))}
+            </tr>);
+}
+
+function ResultsTable(props) {
+  const table = props.history.map((round, index) => (
+                <tr key={index + props.startIndex}>
+                <td className="move rowNumber"> {index + props.startIndex} </td>
+                  { Object.keys(props.users).map(userId => (
+                      <td
+                        key={userId}
+                        className={`move
+                                    ${userId === props.userId ? 'yourself' : ''}
+                                    ${round.moves[userId] === round.results.winningMove ? 'win' : ''}
+                                    `}
+                        >
+                        { round.moves[userId] === 'rock' ? <img src={rock} alt="Rock" /> : null }
+                        { round.moves[userId] === 'paper' ? <img src={paper} alt="Paper" /> : null }
+                        { round.moves[userId] === 'scissor' ? <img src={scissors} alt="Scissors" /> : null }
+                      </td>
+                  ))}
+                </tr>
+            ));
+  return (<tbody>{table}</tbody>);
+}
+
+function ShortenedResultsTable(props) {
+  let history = props.history;
+  const totalLength = props.history.length;
+  let startIndex = 1;
+  if (totalLength > props.displayLength){
+    history = history.slice(totalLength - props.displayLength);
+    startIndex = totalLength - props.displayLength + 1;
+  }
+  console.log(history);
+  console.log(startIndex);
+  return <ResultsTable history={history} startIndex={startIndex} userId={props.userId} users={props.users} />;
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -105,6 +156,7 @@ class App extends Component {
       },
       scores: {},
       spectators: {},
+      fullView: false,
     };
 
     const userId = window.localStorage.getItem('userId');
@@ -127,6 +179,10 @@ class App extends Component {
 
     this.changeName = e => {
       this.setState({editName: e.target.value});
+    };
+
+    this.toggleFullView = () => {
+      this.setState({fullView: !this.state.fullView});
     };
 
     this.joinAsSpectator = () => {
@@ -156,8 +212,7 @@ class App extends Component {
       socket.send(JSON.stringify({
         event: 'resetGame'
       }));
-
-    }
+    };
 
     this.showSettings = () => {
       this.setState({settingsVisible: true});
@@ -182,55 +237,17 @@ class App extends Component {
         </div>
         <table className="history">
           <thead>
-            <tr className="header">
-              { Object.keys(this.state.users).map(userId => (
-                  <td
-                    key={userId}
-                    className={`username ${userId === this.state.userId ? 'yourself' : ''}`}
-                    >
-                    {this.state.users[userId].name}
-                    &nbsp;
-                    ({this.state.scores[userId] || 0})
-                  </td>
-              ))}
-            </tr>
+            <SummaryRow userList={this.state.users} user={this.state.userId} scores={this.state.scores} />
           </thead>
-          <tbody>
-            { this.state.history.map((round, index) => (
-                <tr key={index}>
-                  { Object.keys(this.state.users).map(userId => (
-                      <td
-                        key={userId}
-                        className={`move
-                                    ${userId === this.state.userId ? 'yourself' : ''}
-                                    ${round.moves[userId] === round.results.winningMove ? 'win' : ''}
-                                    `}
-                        >
-                        { round.moves[userId] === 'rock' ? <img src={rock} alt="Rock" /> : null }
-                        { round.moves[userId] === 'paper' ? <img src={paper} alt="Paper" /> : null }
-                        { round.moves[userId] === 'scissor' ? <img src={scissors} alt="Scissors" /> : null }
-                      </td>
-                  ))}
-                </tr>
-            ))}
-          </tbody>
-          { this.state.history.length
-            ? <tfoot>
-                <tr className="header">
-                  { Object.keys(this.state.users).map(userId => (
-                      <td
-                        key={userId}
-                        className={`username ${userId === this.state.userId ? 'yourself' : ''}`}
-                        >
-                        {this.state.users[userId].name}
-                        &nbsp;
-                        ({this.state.scores[userId] || 0})
-                      </td>
-                  ))}
-                </tr>
-              </tfoot>
-            : null }
+          { this.state.fullView
+            ? <ResultsTable history={this.state.history} startIndex={1} users={this.state.users} userId={this.state.userId} />
+            : <ShortenedResultsTable history={this.state.history} users={this.state.users} userId={this.state.userId} displayLength={4} />
+          }
+          <tfoot>
+            <SummaryRow userList={this.state.users} user={this.state.userId} scores={this.state.scores} />
+          </tfoot>
         </table>
+        <button id="toggleFullView" onClick={this.toggleFullView}> See {this.state.fullView ? 'shortened' : 'full'} history </button>
         { this.state.currentMove || this.state.interaction === 'spectator'
           ? <div>Venter på { this.state.pending ? this.state.pending.join(', ') : 'neste runde' }</div>
           : <div>
