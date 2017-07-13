@@ -5,6 +5,21 @@ import scissors from './scissors.svg';
 import paper from './paper.svg';
 import './App.css';
 
+function SummaryRow(props) {
+  return (<tr className="header">
+              { Object.keys(props.userList).map(userId => (
+                  <td
+                    key={userId}
+                    className={`username ${userId === props.user ? 'yourself' : ''}`}
+                    >
+                    {props.userList[userId].name}
+                    &nbsp;
+                    ({props.scores[userId] || 0})
+                  </td>
+              ))}
+            </tr>);
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -169,18 +184,7 @@ class App extends Component {
         </div>
         <table className="history">
           <thead>
-            <tr className="header">
-              { Object.keys(this.state.users).map(userId => (
-                  <td
-                    key={userId}
-                    className={`username ${userId === this.state.userId ? 'yourself' : ''}`}
-                    >
-                    {this.state.users[userId].name}
-                    &nbsp;
-                    ({this.state.scores[userId] || 0})
-                  </td>
-              ))}
-            </tr>
+            <SummaryRow userList={this.state.users} user={this.state.userId} scores={this.state.scores} />
           </thead>
           <tbody>
             { this.state.history.map((round, index) => (
@@ -201,6 +205,9 @@ class App extends Component {
                 </tr>
             ))}
           </tbody>
+          <tfoot>
+            <SummaryRow userList={this.state.users} user={this.state.userId} scores={this.state.scores} />
+          </tfoot>
         </table>
         { this.state.currentMove || this.state.interaction === 'spectator'
           ? <div>Venter på { this.state.pending ? this.state.pending.join(', ') : 'neste runde' }</div>
