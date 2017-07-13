@@ -214,6 +214,22 @@ class App extends Component {
                 </tr>
             ))}
           </tbody>
+          { this.state.history.length
+            ? <tfoot>
+                <tr className="header">
+                  { Object.keys(this.state.users).map(userId => (
+                      <td
+                        key={userId}
+                        className={`username ${userId === this.state.userId ? 'yourself' : ''}`}
+                        >
+                        {this.state.users[userId].name}
+                        &nbsp;
+                        ({this.state.scores[userId] || 0})
+                      </td>
+                  ))}
+                </tr>
+              </tfoot>
+            : null }
         </table>
         { this.state.currentMove || this.state.interaction === 'spectator'
           ? <div>Venter på { this.state.pending ? this.state.pending.join(', ') : 'neste runde' }</div>
