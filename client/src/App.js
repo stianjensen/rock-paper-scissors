@@ -7,6 +7,7 @@ import './App.css';
 
 function SummaryRow(props) {
   return (<tr className="header">
+          <td className="move rowNumber"> # </td>
               { Object.keys(props.userList).map(userId => (
                   <td
                     key={userId}
@@ -189,6 +190,7 @@ class App extends Component {
           <tbody>
             { this.state.history.map((round, index) => (
                 <tr key={index}>
+                <td className="move rowNumber"> {index+1} </td>
                   { Object.keys(this.state.users).map(userId => (
                       <td
                         key={userId}

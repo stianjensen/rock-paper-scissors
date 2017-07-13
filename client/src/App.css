@@ -91,3 +91,8 @@ body {
   top: 5px;
   right: 5px;
 }
+
+.rowNumber {
+  color: grey;
+  font-style: italic;
+}
