@@ -158,12 +158,25 @@ class App extends Component {
       }));
 
     }
+
+    this.showSettings = () => {
+      this.setState({settingsVisible: true});
+    };
+
+    this.hideSettings = () => {
+      this.setState({settingsVisible: false});
+    };
   }
 
   render() {
     return (
       <div className="App">
         <div className="App-header">
+          <button
+            style={{float: 'right'}}
+            onClick={this.showSettings}>
+            Settings
+          </button>
           <h2>Rock - Paper - Scissors</h2>
           <p><em>Which one is it? It's your decision</em></p>
         </div>
@@ -257,36 +270,46 @@ class App extends Component {
             </div>
           : null
         }
-        <div>
-          <h2>Fjern brukere</h2>
-          { Object.keys(this.state.users).map(userId => (
-            <div key={userId}>
-              <button onClick={this.deleteUser(userId)}>
-                Slett {this.state.users[userId].name}
-              </button>
-            </div>
-          ))}
-        </div>
-        <br/>
-        { Object.keys(this.state.spectators).length > 0
-          ? (<div id="spectator_list">
-          <p> <strong> Tilskuere </strong></p>
-            { Object.keys(this.state.spectators).map(userId => (
-              <div key={userId} className="spectator_div">
-                {this.state.spectators[userId].name}
+        { this.state.settingsVisible
+          ? <div className='popover'>
+              <div>
+                <button
+                  style={{float: 'right'}}
+                  onClick={this.hideSettings}>
+                  Close
+                </button>
+                <h2>Fjern brukere</h2>
+                { Object.keys(this.state.users).map(userId => (
+                  <div key={userId}>
+                    <button onClick={this.deleteUser(userId)}>
+                      Slett {this.state.users[userId].name}
+                    </button>
+                  </div>
+                ))}
+                <br/>
+                { Object.keys(this.state.spectators).length > 0
+                  ? (<div id="spectator_list">
+                  <p> <strong> Tilskuere </strong></p>
+                    { Object.keys(this.state.spectators).map(userId => (
+                      <div key={userId} className="spectator_div">
+                        {this.state.spectators[userId].name}
+                      </div>
+                    )) }
+                    </div>)
+                  : null
+                }
+                <br/>
+                { this.state.interaction === 'player'
+                  ? <button onClick={this.resetGame}>Restart the whole game</button>
+                  : null
+                }
+                <div><small><em>
+                  Icons created by Cristiano Zoucas from the Noun Project
+                </em></small></div>
               </div>
-            )) }
-            </div>)
+            </div>
           : null
         }
-        <br/>
-        { this.state.interaction === 'player'
-          ? <button onClick={this.resetGame}>Restart the whole game</button>
-          : null
-        }
-        <div><small><em>
-          Icons created by Cristiano Zoucas from the Noun Project
-        </em></small></div>
       </div>
     );
   }
